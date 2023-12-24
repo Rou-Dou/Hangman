@@ -1,0 +1,2 @@
+text_speed = slow
+filter_value = 5
