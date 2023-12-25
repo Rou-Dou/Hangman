@@ -162,6 +162,7 @@ def main():
             # Update letter_guess and settings information
             letter_guess = guess_prompt.input_str
             filter_word_amount = guess_prompt.f_value
+            text_mode = guess_prompt.speed
             update_settings(guess_prompt.f_value, guess_prompt.speed)
             text_settings = apply_text_speed(guess_prompt.speed)
             big_pause = text_settings[0]
@@ -260,6 +261,8 @@ def main():
             continue_response = pre_process_input(continue_prompt, text_mode, filter_word_amount)
             update_settings(continue_response.f_value, continue_response.speed)
             text_settings = apply_text_speed(continue_response.speed)
+            text_mode = continue_response.speed
+            filter_word_amount = continue_response.f_value
             big_pause = text_settings[0]
             small_pause = text_settings[1]
             print()
