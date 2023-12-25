@@ -3,7 +3,6 @@ from check_string_functions import *
 from hangman_strings import *
 from helpers import *
 from time import sleep
-from error_codes import *
 
 # import dictionary
 word_dict = word_dictionary_create('WordDictionary_Hangman.csv')
@@ -18,7 +17,7 @@ settings_file = open('settings.txt', 'r')
 settings_array = settings_file.readlines()
 dict_settings = {}
 
-# Load txt into dictionary
+# Load settings into dictionary for reference
 for line in settings_array:
     line.replace('\n', '')
     if line.find('=') > 0:
@@ -26,58 +25,6 @@ for line in settings_array:
 
 settings_file.close()
 
-
-def get_word(word_dict, filter_amount):
-    """(dict) -> str
-
-    return a word from the dictionary on call
-
-    """
-    # find length of dictionary for pick_index
-    length_dict = len(word_dict)
-
-    # generate a random number to get a word from the word_dict
-    index = pick_index(length_dict)
-
-    while True:
-        # if the word length is longer than the filter value try again
-        if int(word_dict[str(index)][2]) > filter_amount:
-            index = pick_index(length_dict)
-
-        # if the world has already be attempted try again
-        elif word_dict[str(index)][0] in win_loss_dict.keys():
-            index = pick_index(length_dict)
-            print('Word repeated, generating new word')
-
-        else:
-            break
-
-    return word_dict[str(index)][0]
-
-def has_invalid_character(guess, guesses_string, word_to_guess):
-    """(str) -> int
-
-    for a given string, return a posiive integer greater than 0 if and only if the character in the guess
-    is not one of the 26 valid alphabetical characters, else return 0
-
-    >> has_invalid_character('')
-    1
-    >> has_invalid_character('k3')
-    2
-    >> has_invalid_character('a')
-    0
-    """
-
-    if guess == '':
-        return empty_string_error
-    elif has_number(guess):
-        return has_number_error
-    elif not is_alpha(guess):
-        return is_not_alpha_error
-    elif guess.lower() in guesses_string:
-        return already_guessed_error
-    else:
-        return no_error
 
 def update_settings(f_value, text_speed):
     """(int, str)
@@ -123,22 +70,20 @@ def main():
 
     # /////// Round Loop //////// #
     while True:
-        word_to_guess = get_word(word_dict, filter_word_amount) # get word_to_guess from dict
+        word_to_guess = get_word(word_dict, filter_word_amount, win_loss_dict) # get word_to_guess from dict
         key_list.append(word_to_guess) # append generated word to the word list for later reference
         correct_counter = 0 # initialize correct counter
         incorrect_counter = 0 # initialize incorrect counter
         guesses_string = '' # intialize string to track letter guesses
         quit_string = 'quit'
         is_big_word = len(word_to_guess) > 6 # check if incorrect_counter needs to be increased
+        word_progress_string = '_ ' * len(word_to_guess) #generate a blank progress string
 
         # change max guesses based on the length of the word_to_guess
         if is_big_word:
             incorrect_counter_max = big_word
         else:
             incorrect_counter_max = small_word
-
-        # create initial place holder string
-        word_progress_string = '_ ' * len(word_to_guess)
 
         # Provide alternative input options to user
         print("\nIf you wish to change text speed or word filter settings at any point during the game please type 'settings'")
@@ -170,7 +115,7 @@ def main():
             guess_length = len(letter_guess)
 
             # check if the input is valid, and if so, if it is contained in the word_to_gues
-            error_code = has_invalid_character(letter_guess, guesses_string, word_to_guess)
+            error_code = has_invalid_character(letter_guess, guesses_string)
             if error_code != no_error:
                 sleep(small_pause)
                 print(error_codes[error_code] + '\n')
@@ -210,7 +155,7 @@ def main():
             word_progress_string = generate_word_progress(word_progress_string, guess_info.indices, guess_info.letters)
 
             # append a comma if the user has guessed at least one valid character
-            if correct_counter + incorrect_counter > 1 and not guess_length > 1:
+            if len(guesses_string) > 0 and len(letter_guess) == 1:
                 guesses_string += ', '
 
             if not guess_length > 1:

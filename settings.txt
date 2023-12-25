@@ -1,2 +1,2 @@
 text_speed = fast
-filter_value = 8
+filter_value = 7

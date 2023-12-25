@@ -1,4 +1,5 @@
 import random
+from error_codes import *
 
 yes_str = 'y'
 no_str = 'n'
@@ -44,6 +45,32 @@ def is_alpha(guess):
         if char.lower() not in 'abcdefghijklmnopqrstuvwxyz':
             return False
     return True
+
+
+def has_invalid_character(guess, guesses_string):
+    """(str) -> int
+
+    for a given string, return a posiive integer greater than 0 if and only if the character in the guess
+    is not one of the 26 valid alphabetical characters, else return 0
+
+    >> has_invalid_character('')
+    1
+    >> has_invalid_character('k3')
+    2
+    >> has_invalid_character('a')
+    0
+    """
+
+    if guess == '':
+        return empty_string_error
+    elif has_number(guess):
+        return has_number_error
+    elif not is_alpha(guess):
+        return is_not_alpha_error
+    elif guess.lower() in guesses_string:
+        return already_guessed_error
+    else:
+        return no_error
 
 
 def check_continue(cont_yes_no):

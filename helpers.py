@@ -13,6 +13,34 @@ class PreProcessingOutput:
         self.speed = new_text_speed_value
 
 
+def get_word(word_dict, filter_amount, win_loss_dict):
+    """(dict) -> str
+
+    return a word from the dictionary on call
+
+    """
+    # find length of dictionary for pick_index
+    length_dict = len(word_dict)
+
+    # generate a random number to get a word from the word_dict
+    index = pick_index(length_dict)
+
+    while True:
+        # if the word length is longer than the filter value try again
+        if int(word_dict[str(index)][2]) > filter_amount:
+            index = pick_index(length_dict)
+
+        # if the world has already be attempted try again
+        elif word_dict[str(index)][0] in win_loss_dict.keys():
+            index = pick_index(length_dict)
+            print('Word repeated, generating new word')
+
+        else:
+            break
+
+    return word_dict[str(index)][0]
+
+
 def pick_index(length_dictionary):
     """(int) -> int
 
